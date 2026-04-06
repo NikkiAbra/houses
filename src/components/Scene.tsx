@@ -6,11 +6,15 @@ import { StaticHouses } from './StaticHouses'
 import { AnimatedHouse } from './AnimatedHouse'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
 
-import block06Url from '../../../site/public/house_models/animated/block06.glb?url'
-import block07Url from '../../../site/public/house_models/animated/block07.glb?url'
-import block08Url from '../../../site/public/house_models/animated/block08.glb?url'
-import hdrUrl    from '../../light/autumn_field_puresky_1k.hdr?url'
+import block06Url from '../../house_models/animated/block06.glb?url'
+import block07Url from '../../house_models/animated/block07.glb?url'
+import block08Url from '../../house_models/animated/block08.glb?url'
+import hdrUrl     from '../../light/autumn_field_puresky_1k.hdr?url'
 
+import tex06White   from '../../textures/house_06/06_white.jpg?url'
+import tex06Windows from '../../textures/house_06/06_windows.jpg?url'
+import tex07White   from '../../textures/house_07/07_white.jpg?url'
+import tex07Windows from '../../textures/house_07/07_windows.jpg?url'
 
 useGLTF.preload(block06Url)
 useGLTF.preload(block07Url)
@@ -28,8 +32,21 @@ export function Scene() {
         <Environment files={hdrUrl} background={false} />
         <CameraSetup />
         <StaticHouses />
-        <AnimatedHouseBlend url={block06Url} />
-        <AnimatedHouse url={block07Url} />
+
+        <AnimatedHouseBlend
+          url={block06Url}
+          meshName="house_06"
+          texBaseUrl={tex06White}
+          texTargetUrl={tex06Windows}
+        />
+
+        <AnimatedHouseBlend
+          url={block07Url}
+          meshName="house_07"
+          texBaseUrl={tex07White}
+          texTargetUrl={tex07Windows}
+        />
+
         <AnimatedHouse url={block08Url} />
       </Suspense>
     </Canvas>

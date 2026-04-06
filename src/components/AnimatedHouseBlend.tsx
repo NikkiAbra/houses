@@ -6,10 +6,7 @@ import * as THREE from 'three'
 import { BlendMaterial } from '../materials/BlendMaterial'
 import type { BlendMaterialInstance } from '../materials/BlendMaterial'
 
-import tex1Url from '../../../site/public/textures/06_white.jpg?url'
-import tex2Url from '../../../site/public/textures/06_windows.jpg?url'
-
-// ─── Raw Blender F-Curve data (same as AnimatedHouse) ────────────────────────
+// ─── Raw Blender F-Curve data ─────────────────────────────────────────────────
 const FPS = 24
 const KF = [
   {
@@ -59,24 +56,26 @@ function evalSeg(seg: (typeof SEG)[number], elapsedSec: number): number {
     if (bez(mid, p0[0], p1[0], p2[0], p3[0]) < targetFrame) lo = mid
     else hi = mid
   }
-  const u = (lo + hi) * 0.5
-  return bez(u, p0[1], p1[1], p2[1], p3[1])
+  return bez((lo + hi) * 0.5, p0[1], p1[1], p2[1], p3[1])
 }
 
 const HOVER_IN_DUR  = (SEG[0].p3[0] - SEG[0].p0[0]) / FPS
 const HOVER_OUT_DUR = (SEG[1].p3[0] - SEG[1].p0[0]) / FPS
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Component ────────────────────────────────────────────────────────────────
 
 type State = 'rest' | 'hover-in' | 'at-mid' | 'hover-out'
 
-interface Props { url: string }
+interface Props {
+  url:          string   // GLB path
+  meshName:     string   // name of the mesh to receive the blend material
+  texBaseUrl:   string   // texture at rest  (white / baked-off)
+  texTargetUrl: string   // texture at hover (baked-on)
+}
 
-export function AnimatedHouseBlend({ url }: Props) {
+export function AnimatedHouseBlend({ url, meshName, texBaseUrl, texTargetUrl }: Props) {
   const { scene } = useGLTF(url)
-
-  // Load both textures; suspend until ready
-  const [texBase, texTarget] = useTexture([tex1Url, tex2Url])
+  const [texBase, texTarget] = useTexture([texBaseUrl, texTargetUrl])
 
   const [hovered, setHovered] = useState(false)
   const stateRef   = useRef<State>('rest')
@@ -85,45 +84,42 @@ export function AnimatedHouseBlend({ url }: Props) {
 
   useCursor(hovered)
 
-  // Build the cloned scene + blend material once textures and GLTF are ready
   const { clonedScene, blendMat } = useMemo(() => {
-    // GLTF textures use OpenGL UV convention (no Y-flip needed)
+    // GLTF uses OpenGL UV convention — no Y-flip
     texBase.flipY   = false; texBase.needsUpdate   = true
     texTarget.flipY = false; texTarget.needsUpdate = true
 
     const mat = new BlendMaterial() as BlendMaterialInstance
-    mat.uTexBase   = texBase
-    mat.uTexTarget = texTarget
-    mat.uMix       = 0           // start at white (rest state)
-    mat.morphTargets = true       // enable morph target support in vertex shader
+    mat.uTexBase    = texBase
+    mat.uTexTarget  = texTarget
+    mat.uMix        = 0
+    mat.morphTargets = true
 
     const clone = scene.clone(true)
     clone.traverse((obj) => {
       if (obj instanceof THREE.Mesh && obj.morphTargetInfluences?.length) {
         obj.morphTargetInfluences[0] = KF[0].value   // resting state
 
-        if (obj.name === 'house_06') {
+        if (obj.name === meshName) {
           obj.material = mat
         }
       }
     })
 
     return { clonedScene: clone, blendMat: mat }
-  }, [scene, texBase, texTarget])
+  }, [scene, texBase, texTarget, meshName])
 
-  // ── Apply morph value + keep uMix in sync ──
+  // morph 0.9815 = rest  → uMix = 0 (base / white)
+  // morph 0.0    = hover → uMix = 1 (target / windows)
   const setMorph = (v: number) => {
     clonedScene.traverse((obj) => {
       if (obj instanceof THREE.Mesh && obj.morphTargetInfluences?.length) {
         obj.morphTargetInfluences[0] = v
       }
     })
-    // morph 0.9815 = rest  → uMix = 0 (white)
-    // morph 0.0    = hover → uMix = 1 (windows)
     blendMat.uMix = 1 - v / KF[0].value
   }
 
-  // ── Pointer handlers ──
   const onOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     insideRef.current = true
@@ -143,7 +139,6 @@ export function AnimatedHouseBlend({ url }: Props) {
     }
   }
 
-  // ── Per-frame update ──
   useFrame((_, delta) => {
     const state = stateRef.current
     if (state === 'rest' || state === 'at-mid') return
