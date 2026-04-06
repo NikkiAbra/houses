@@ -3,7 +3,6 @@ import { Canvas } from '@react-three/fiber'
 import { useGLTF, Environment } from '@react-three/drei'
 import { CameraSetup } from './CameraSetup'
 import { StaticHouses } from './StaticHouses'
-import { AnimatedHouse } from './AnimatedHouse'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
 
 import block06Url from '../../house_models/animated/block06.glb?url'
@@ -15,6 +14,8 @@ import tex06White   from '../../textures/house_06/06_white.jpg?url'
 import tex06Windows from '../../textures/house_06/06_windows.jpg?url'
 import tex07White   from '../../textures/house_07/07_white.jpg?url'
 import tex07Windows from '../../textures/house_07/07_windows.jpg?url'
+import tex08White   from '../../textures/house_08/white_08.jpg?url'
+import tex08Windows from '../../textures/house_08/windows_08.jpg?url'
 
 useGLTF.preload(block06Url)
 useGLTF.preload(block07Url)
@@ -47,7 +48,12 @@ export function Scene() {
           texTargetUrl={tex07Windows}
         />
 
-        <AnimatedHouse url={block08Url} />
+        <AnimatedHouseBlend
+          url={block08Url}
+          meshName="house_08"
+          texBaseUrl={tex08White}
+          texTargetUrl={tex08Windows}
+        />
       </Suspense>
     </Canvas>
   )
