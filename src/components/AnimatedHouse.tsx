@@ -15,6 +15,19 @@ export function AnimatedHouse({ url }: Props) {
 
   useCursor(hovered)
 
+  // Initialize morph targets to state 1 (default resting shape)
+  useEffect(() => {
+    scene.traverse((obj) => {
+      if (
+        obj instanceof THREE.Mesh &&
+        obj.morphTargetInfluences &&
+        obj.morphTargetInfluences.length > 0
+      ) {
+        obj.morphTargetInfluences[0] = 1
+      }
+    })
+  }, [scene])
+
   const onOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation()
     hoveredRef.current = true
@@ -35,7 +48,7 @@ export function AnimatedHouse({ url }: Props) {
         obj.morphTargetInfluences.length > 0
       ) {
         obj.morphTargetInfluences[0] = THREE.MathUtils.lerp(
-          obj.morphTargetInfluences[0] ?? 0,
+          obj.morphTargetInfluences[0] ?? 1,
           target,
           // smooth step — faster going in, same speed going out
           delta * 5
