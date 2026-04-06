@@ -6,7 +6,7 @@ export default defineConfig({
   assetsInclude: ['**/*.glb', '**/*.hdr'],
   server: {
     fs: {
-      allow: ['.'],
+      allow: ['.', '..'],
     },
   },
 })
