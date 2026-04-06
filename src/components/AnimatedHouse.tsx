@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useGLTF, useCursor } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
@@ -27,7 +27,7 @@ export function AnimatedHouse({ url }: Props) {
   }
 
   useFrame((_, delta) => {
-    const target = hoveredRef.current ? 1 : 0
+    const target = hoveredRef.current ? 0 : 1
     scene.traverse((obj) => {
       if (
         obj instanceof THREE.Mesh &&
