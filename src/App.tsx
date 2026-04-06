@@ -1,19 +1,18 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
+import { SceneProvider } from './context/SceneContext'
 import { Scene } from './components/Scene'
+import { ControlPanel } from './components/ControlPanel'
 
-const theme = createTheme({
-  palette: {
-    background: {
-      default: '#f0ede8',
-    },
-  },
-})
+const theme = createTheme()
 
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Scene />
+      <SceneProvider>
+        <Scene />
+        <ControlPanel />
+      </SceneProvider>
     </ThemeProvider>
   )
 }
