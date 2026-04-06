@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Read(//c/Program Files/nodejs//**)",
+      "Read(//c/Users/Nikita/AppData/Local/Programs/**)",
+      "Bash(cmd //c \"where npm\")",
+      "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(cmd //c \"taskkill /F /IM node.exe\")"
+    ]
+  }
+}
