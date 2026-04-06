@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useMemo } from 'react'
 import { useGLTF, useCursor } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
@@ -15,9 +15,12 @@ export function AnimatedHouse({ url }: Props) {
 
   useCursor(hovered)
 
-  // Initialize morph targets to state 1 (default resting shape)
-  useEffect(() => {
-    scene.traverse((obj) => {
+  // Clone so each instance owns its own Three.js object tree (avoids
+  // StrictMode / GLTF-cache "already attached" errors) and set the
+  // default resting state (morph = 1) immediately before first render.
+  const clonedScene = useMemo(() => {
+    const clone = scene.clone(true)
+    clone.traverse((obj) => {
       if (
         obj instanceof THREE.Mesh &&
         obj.morphTargetInfluences &&
@@ -26,6 +29,7 @@ export function AnimatedHouse({ url }: Props) {
         obj.morphTargetInfluences[0] = 1
       }
     })
+    return clone
   }, [scene])
 
   const onOver = (e: ThreeEvent<PointerEvent>) => {
@@ -41,16 +45,15 @@ export function AnimatedHouse({ url }: Props) {
 
   useFrame((_, delta) => {
     const target = hoveredRef.current ? 0 : 1
-    scene.traverse((obj) => {
+    clonedScene.traverse((obj) => {
       if (
         obj instanceof THREE.Mesh &&
         obj.morphTargetInfluences &&
         obj.morphTargetInfluences.length > 0
       ) {
         obj.morphTargetInfluences[0] = THREE.MathUtils.lerp(
-          obj.morphTargetInfluences[0] ?? 1,
+          obj.morphTargetInfluences[0],
           target,
-          // smooth step — faster going in, same speed going out
           delta * 5
         )
       }
@@ -59,7 +62,7 @@ export function AnimatedHouse({ url }: Props) {
 
   return (
     <primitive
-      object={scene}
+      object={clonedScene}
       onPointerOver={onOver}
       onPointerOut={onOut}
     />
