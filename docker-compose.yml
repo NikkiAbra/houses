@@ -5,9 +5,9 @@ services:
       dockerfile: Dockerfile
     container_name: houses-web
     networks:
-      - detki-prod-network
+      - detkiprod_detki-prod-network
     restart: unless-stopped
 
 networks:
-  detki-prod-network:
+  detkiprod_detki-prod-network:
     external: true
