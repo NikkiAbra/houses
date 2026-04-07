@@ -1,10 +1,13 @@
-import { useRef, useState, useMemo } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useGLTF, useCursor, useTexture } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import type { ThreeEvent } from '@react-three/fiber'
 import * as THREE from 'three'
 import { BlendMaterial } from '../materials/BlendMaterial'
 import type { BlendMaterialInstance } from '../materials/BlendMaterial'
+import { onScrollDown, onScrollUp } from '../utils/mobileScrollBus'
+
+const MOBILE_BREAKPOINT = 768
 
 // ─── Raw Blender F-Curve data ─────────────────────────────────────────────────
 const FPS = 24
@@ -120,7 +123,9 @@ export function AnimatedHouseBlend({ url, meshName, texBaseUrl, texTargetUrl }: 
     blendMat.uMix = 1 - v / KF[0].value
   }
 
+  // ── Desktop: hover ───────────────────────────────────────────────────────
   const onOver = (e: ThreeEvent<PointerEvent>) => {
+    if (window.innerWidth < MOBILE_BREAKPOINT) return
     e.stopPropagation()
     insideRef.current = true
     setHovered(true)
@@ -131,6 +136,7 @@ export function AnimatedHouseBlend({ url, meshName, texBaseUrl, texTargetUrl }: 
   }
 
   const onOut = () => {
+    if (window.innerWidth < MOBILE_BREAKPOINT) return
     insideRef.current = false
     setHovered(false)
     if (stateRef.current === 'at-mid') {
@@ -138,6 +144,25 @@ export function AnimatedHouseBlend({ url, meshName, texBaseUrl, texTargetUrl }: 
       elapsedRef.current = 0
     }
   }
+
+  // ── Mobile: scroll events ─────────────────────────────────────────────────
+  useEffect(() => {
+    const unsubDown = onScrollDown(() => {
+      if (stateRef.current === 'rest') {
+        stateRef.current   = 'hover-in'
+        elapsedRef.current = 0
+        insideRef.current  = true
+      }
+    })
+    const unsubUp = onScrollUp(() => {
+      insideRef.current = false
+      if (stateRef.current === 'at-mid') {
+        stateRef.current   = 'hover-out'
+        elapsedRef.current = 0
+      }
+    })
+    return () => { unsubDown(); unsubUp() }
+  }, [])
 
   useFrame((_, delta) => {
     const state = stateRef.current

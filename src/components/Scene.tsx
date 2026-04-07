@@ -9,6 +9,7 @@ import { StaticHouses } from './StaticHouses'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
 import { SceneRotator } from './SceneRotator'
 import { SceneReady } from './SceneReady'
+import { MobileScrollTrigger } from './MobileScrollTrigger'
 
 import block06Url from '../../house_models/animated/block06.glb?url'
 import block07Url from '../../house_models/animated/block07.glb?url'
@@ -81,6 +82,7 @@ export function Scene({ onReady }: Props) {
           />
         </EffectComposer>
 
+        <MobileScrollTrigger />
         {onReady && <SceneReady onReady={onReady} />}
       </Suspense>
     </Canvas>
