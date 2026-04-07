@@ -18,7 +18,7 @@ import * as THREE from 'three'
 //   col2 (−forward)=  ( 0.7752, −0.0820,  0.6263)
 
 // ── Tuning constants ──────────────────────────────────────────────────────────
-const DOLLY_DESKTOP  = 0.20
+const DOLLY_DESKTOP  = 0.10
 const DOLLY_MOBILE   = 0.40
 
 const CENTER_DESKTOP = 0.3
