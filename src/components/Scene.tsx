@@ -1,6 +1,9 @@
 import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useGLTF, Environment } from '@react-three/drei'
+import { EffectComposer, ChromaticAberration } from '@react-three/postprocessing'
+import { BlendFunction } from 'postprocessing'
+import * as THREE from 'three'
 import { CameraSetup } from './CameraSetup'
 import { StaticHouses } from './StaticHouses'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
@@ -62,6 +65,15 @@ export function Scene({ onReady }: Props) {
             texTargetUrl={tex08Windows}
           />
         </SceneRotator>
+        <EffectComposer>
+          <ChromaticAberration
+            blendFunction={BlendFunction.NORMAL}
+            offset={new THREE.Vector2(0.0008, 0.0008)}
+            radialModulation={true}
+            modulationOffset={0.15}
+          />
+        </EffectComposer>
+
         {onReady && <SceneReady onReady={onReady} />}
       </Suspense>
     </Canvas>
