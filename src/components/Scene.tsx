@@ -38,7 +38,7 @@ export function Scene({ onReady }: Props) {
       dpr={[1, 2]}
     >
       <Suspense fallback={null}>
-        <color attach="background" args={['#f0ede8']} />
+        <color attach="background" args={['#ededed']} />
         <Environment files={hdrUrl} background={false} />
         <CameraSetup />
         <SceneRotator>
