@@ -6,11 +6,6 @@ import logoUrl from './assets/logo.svg'
 
 const theme = createTheme()
 
-// ── Logo position & size ─────────────────────────────────────────────────────
-const LOGO_TOP   = 32   // px from top
-const LOGO_LEFT  = 32   // px from left
-const LOGO_WIDTH = 160  // px
-
 export default function App() {
   const [loaded, setLoaded] = useState(false)
 
@@ -23,11 +18,13 @@ export default function App() {
         alt="logo"
         style={{
           position: 'fixed',
-          top:      LOGO_TOP,
-          left:     LOGO_LEFT,
-          width:    LOGO_WIDTH,
-          height:   'auto',
-          zIndex:   10,
+          // ── desktop ──────────────────────────
+          top:   32,    // px from top
+          left:  32,    // px from left
+          width: 160,   // px
+          // ── overrides applied via media query in index.css ──
+          height:        'auto',
+          zIndex:        10,
           pointerEvents: 'none',
         }}
       />

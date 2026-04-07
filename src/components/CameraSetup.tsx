@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useLayoutEffect, useEffect } from 'react'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -19,33 +19,52 @@ import * as THREE from 'three'
 
 // ── Tuning constants ──────────────────────────────────────────────────────────
 // Forward dolly: fraction of distance to move closer (0.2 = 20% larger)
-const DOLLY = 0.20
+const DOLLY_DESKTOP = 0.20
+const DOLLY_MOBILE  = 0.40
+
 // Horizontal centering: units along camera-right to shift (+ = scene moves left)
-const CENTER = 0.3
+const CENTER_DESKTOP = 0.3
+const CENTER_MOBILE  = 0.0   // re-center for portrait layout
+
+// Desktop reference: the FOV the design was made for at 16:9
+const FOV_DESKTOP    = 7.7232   // vertical degrees
+const ASPECT_REF     = 16 / 9   // reference aspect ratio
+
+// Mobile breakpoint (portrait or narrow screen)
+const MOBILE_BREAKPOINT = 768   // px
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const deg = (d: number) => d * (Math.PI / 180)
+const rad = (r: number) => r * (180 / Math.PI)
+
+/**
+ * Given a vertical FOV and reference aspect, compute horizontal FOV (radians).
+ * Then derive the vertical FOV needed for the current aspect to preserve
+ * the same horizontal coverage.
+ */
+function adaptFov(vertFovDeg: number, refAspect: number, currentAspect: number): number {
+  const hFov = 2 * Math.atan(Math.tan(deg(vertFovDeg) / 2) * refAspect)
+  return rad(2 * Math.atan(Math.tan(hFov / 2) / currentAspect))
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export function CameraSetup() {
   const { camera } = useThree()
 
+  // Set position and rotation once — these never change
   useLayoutEffect(() => {
-    // Base Blender position (converted to Three.js coords)
     const base = new THREE.Vector3(60.036579, -0.446705, 48.072189)
 
-    // Camera axes from rotation matrix columns:
-    //   right   = col0 = ( 0.6284,  0.0000, −0.7779)
-    //   forward = −col2 = (−0.7752,  0.0820, −0.6263)
     const right   = new THREE.Vector3( 0.6284,  0.0000, -0.7779)
     const forward = new THREE.Vector3(-0.7752,  0.0820, -0.6263)
 
-    // Dolly: move forward by DOLLY fraction of current distance
-    const dist = base.length()                          // distance to scene origin
-    base.addScaledVector(forward, dist * DOLLY)
-
-    // Centering: shift along camera right
-    base.addScaledVector(right, CENTER)
+    const dist = base.length()
+    base.addScaledVector(forward, dist * DOLLY_DESKTOP)
+    base.addScaledVector(right, CENTER_DESKTOP)
 
     camera.position.copy(base)
 
-    // Rotation — set from the analytically derived matrix
     const m = new THREE.Matrix4()
     // prettier-ignore
     m.set(
@@ -56,12 +75,37 @@ export function CameraSetup() {
     )
     camera.quaternion.setFromRotationMatrix(m)
 
-    // FOV & clip planes
     const cam = camera as THREE.PerspectiveCamera
-    cam.fov = 7.7232
     cam.near = 0.1
-    cam.far = 2000
-    cam.updateProjectionMatrix()
+    cam.far  = 2000
+  }, [camera])
+
+  // Update FOV (and centering) on resize
+  useEffect(() => {
+    const update = () => {
+      const cam    = camera as THREE.PerspectiveCamera
+      const w      = window.innerWidth
+      const h      = window.innerHeight
+      const aspect = w / h
+      const mobile = w < MOBILE_BREAKPOINT
+
+      // Adjust centering for mobile
+      const base = new THREE.Vector3(60.036579, -0.446705, 48.072189)
+      const right   = new THREE.Vector3( 0.6284,  0.0000, -0.7779)
+      const forward = new THREE.Vector3(-0.7752,  0.0820, -0.6263)
+      const currentDolly = mobile ? DOLLY_MOBILE : DOLLY_DESKTOP
+        base.addScaledVector(forward, base.length() * currentDolly)
+base.addScaledVector(right, mobile ? CENTER_MOBILE : CENTER_DESKTOP)
+      camera.position.copy(base)
+
+      // Adapt FOV to preserve horizontal scene coverage
+      cam.fov = adaptFov(FOV_DESKTOP, ASPECT_REF, aspect)
+      cam.updateProjectionMatrix()
+    }
+
+    update()  // run once on mount
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
   }, [camera])
 
   return null

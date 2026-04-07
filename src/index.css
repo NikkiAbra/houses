@@ -11,3 +11,12 @@ body,
   height: 100%;
   overflow: hidden;
 }
+
+/* ── Mobile logo overrides ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  img[alt="logo"] {
+    top:   20px !important;
+    left:  20px !important;
+    width: 120px !important;
+  }
+}
