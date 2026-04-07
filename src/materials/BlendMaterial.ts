@@ -43,7 +43,8 @@ export const BlendMaterial = shaderMaterial(
 
 /** Convenience type for typed instances. */
 export type BlendMaterialInstance = THREE.ShaderMaterial & {
-  uTexBase:   THREE.Texture
-  uTexTarget: THREE.Texture
-  uMix:       number
+  uTexBase:     THREE.Texture
+  uTexTarget:   THREE.Texture
+  uMix:         number
+  morphTargets: boolean
 }
