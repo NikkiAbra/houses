@@ -5,6 +5,7 @@ import { CameraSetup } from './CameraSetup'
 import { StaticHouses } from './StaticHouses'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
 import { SceneRotator } from './SceneRotator'
+import { SceneReady } from './SceneReady'
 
 import block06Url from '../../house_models/animated/block06.glb?url'
 import block07Url from '../../house_models/animated/block07.glb?url'
@@ -22,7 +23,11 @@ useGLTF.preload(block06Url)
 useGLTF.preload(block07Url)
 useGLTF.preload(block08Url)
 
-export function Scene() {
+interface Props {
+  onReady?: () => void
+}
+
+export function Scene({ onReady }: Props) {
   return (
     <Canvas
       style={{ width: '100vw', height: '100vh' }}
@@ -57,6 +62,7 @@ export function Scene() {
             texTargetUrl={tex08Windows}
           />
         </SceneRotator>
+        {onReady && <SceneReady onReady={onReady} />}
       </Suspense>
     </Canvas>
   )
