@@ -3,7 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
 // Max rotation in radians (±4°)
-const MAX_ANGLE = 0.07
+const MAX_ANGLE = 0.025
 
 // Lerp speed — smaller = smoother/slower
 const LERP = 0.02
