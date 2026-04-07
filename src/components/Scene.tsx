@@ -4,6 +4,7 @@ import { useGLTF, Environment } from '@react-three/drei'
 import { CameraSetup } from './CameraSetup'
 import { StaticHouses } from './StaticHouses'
 import { AnimatedHouseBlend } from './AnimatedHouseBlend'
+import { SceneRotator } from './SceneRotator'
 
 import block06Url from '../../house_models/animated/block06.glb?url'
 import block07Url from '../../house_models/animated/block07.glb?url'
@@ -32,28 +33,30 @@ export function Scene() {
         <color attach="background" args={['#f0ede8']} />
         <Environment files={hdrUrl} background={false} />
         <CameraSetup />
-        <StaticHouses />
+        <SceneRotator>
+          <StaticHouses />
 
-        <AnimatedHouseBlend
-          url={block06Url}
-          meshName="house_06"
-          texBaseUrl={tex06White}
-          texTargetUrl={tex06Windows}
-        />
+          <AnimatedHouseBlend
+            url={block06Url}
+            meshName="house_06"
+            texBaseUrl={tex06White}
+            texTargetUrl={tex06Windows}
+          />
 
-        <AnimatedHouseBlend
-          url={block07Url}
-          meshName="house_07"
-          texBaseUrl={tex07White}
-          texTargetUrl={tex07Windows}
-        />
+          <AnimatedHouseBlend
+            url={block07Url}
+            meshName="house_07"
+            texBaseUrl={tex07White}
+            texTargetUrl={tex07Windows}
+          />
 
-        <AnimatedHouseBlend
-          url={block08Url}
-          meshName="house_08"
-          texBaseUrl={tex08White}
-          texTargetUrl={tex08Windows}
-        />
+          <AnimatedHouseBlend
+            url={block08Url}
+            meshName="house_08"
+            texBaseUrl={tex08White}
+            texTargetUrl={tex08Windows}
+          />
+        </SceneRotator>
       </Suspense>
     </Canvas>
   )
