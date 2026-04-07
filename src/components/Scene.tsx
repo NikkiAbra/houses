@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { useGLTF, Environment } from '@react-three/drei'
-import { EffectComposer, ChromaticAberration } from '@react-three/postprocessing'
-import { BlendFunction } from 'postprocessing'
+import { EffectComposer, ChromaticAberration, Bloom } from '@react-three/postprocessing'
+import { BlendFunction, KernelSize } from 'postprocessing'
 import * as THREE from 'three'
 import { CameraSetup } from './CameraSetup'
 import { StaticHouses } from './StaticHouses'
@@ -66,6 +66,13 @@ export function Scene({ onReady }: Props) {
           />
         </SceneRotator>
         <EffectComposer>
+          <Bloom
+            intensity={0.02}
+            luminanceThreshold={0.75}
+            luminanceSmoothing={0.1}
+            kernelSize={KernelSize.MEDIUM}
+            mipmapBlur
+          />
           <ChromaticAberration
             blendFunction={BlendFunction.NORMAL}
             offset={new THREE.Vector2(0.0008, 0.0008)}
