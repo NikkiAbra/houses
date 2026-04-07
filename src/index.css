@@ -12,6 +12,12 @@ body,
   overflow: hidden;
 }
 
+/* ── Loading icon animations ─────────────────────────────────────────────── */
+@keyframes bounce {
+  0%,  100% { transform: translateY(0);    animation-timing-function: ease-in;  }
+  50%        { transform: translateY(-18px); animation-timing-function: ease-out; }
+}
+
 /* ── Mobile logo overrides ───────────────────────────────────────────────── */
 @media (max-width: 768px) {
   img[alt="logo"] {
