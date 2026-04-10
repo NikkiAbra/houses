@@ -7,7 +7,14 @@ import logoUrl from './assets/logo.svg'
 
 const theme = createTheme()
 
-const MIN_LOADING_MS = 1000  // минимальное время показа загрузки
+const MIN_LOADING_MS = 1000
+
+// ── Background gradient overlay ───────────────────────────────────────────────
+// Полупрозрачный overlay поверх белого canvas.
+// Низ и центр — прозрачный (виден белый canvas).
+// Верх — лёгкий серый.
+const GRAD_TOP_COLOR   = 'rgba(124, 124, 124, 0.45)'  // цвет и прозрачность верхней точки
+const GRAD_CLEAR_STOP  = '30%'                         // до какой высоты снизу overlay прозрачный
 
 export default function App() {
   const [loaded, setLoaded] = useState(false)
@@ -22,6 +29,14 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      {/* Градиентный overlay поверх белого canvas */}
+      <div style={{
+        position:      'fixed',
+        inset:          0,
+        zIndex:         1,
+        pointerEvents: 'none',
+        background:    `linear-gradient(to top, transparent ${GRAD_CLEAR_STOP}, ${GRAD_TOP_COLOR} 100%)`,
+      }} />
       <Scene onReady={handleReady} />
       <img
         src={logoUrl}
