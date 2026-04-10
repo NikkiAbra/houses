@@ -3,7 +3,6 @@ import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import { Scene } from './components/Scene'
 import { FadeOverlay } from './components/FadeOverlay'
 import { LoadingIcon } from './components/LoadingIcon'
-import logoUrl from './assets/logo.svg'
 
 const theme = createTheme()
 
@@ -27,19 +26,6 @@ export default function App() {
       <Scene onReady={handleReady} />
 
       {/* UI поверх canvas */}
-      <img
-        src={logoUrl}
-        alt="logo"
-        style={{
-          position:      'fixed',
-          top:            32,
-          left:           32,
-          width:          160,
-          height:        'auto',
-          zIndex:         10,
-          pointerEvents: 'none',
-        }}
-      />
       <LoadingIcon visible={!loaded} />
       <FadeOverlay visible={!loaded} />
     </ThemeProvider>
