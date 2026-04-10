@@ -10,6 +10,7 @@ import { AnimatedHouseBlend } from './AnimatedHouseBlend'
 import { SceneRotator } from './SceneRotator'
 import { SceneReady } from './SceneReady'
 import { MobileScrollTrigger } from './MobileScrollTrigger'
+import { GradientBackground } from './GradientBackground'
 
 import block06Url from '../../house_models/animated/block06.glb?url'
 import block07Url from '../../house_models/animated/block07.glb?url'
@@ -27,6 +28,11 @@ useGLTF.preload(block06Url)
 useGLTF.preload(block07Url)
 useGLTF.preload(block08Url)
 
+// ── Background gradient ───────────────────────────────────────────────────────
+const BG_BOTTOM      = '#ffffff'   // цвет низа
+const BG_TOP         = '#333333'   // цвет верха
+const BG_BOTTOM_STOP = 0.30        // 0–1, до какой высоты держится нижний цвет
+
 interface Props {
   onReady?: () => void
 }
@@ -39,7 +45,11 @@ export function Scene({ onReady }: Props) {
       dpr={[1, 2]}
     >
       <Suspense fallback={null}>
-        <color attach="background" args={['#ffffff']} />
+        <GradientBackground
+          colorBottom={BG_BOTTOM}
+          colorTop={BG_TOP}
+          stop={BG_BOTTOM_STOP}
+        />
         <Environment files={hdrUrl} background={false} />
         <CameraSetup />
         <SceneRotator>
